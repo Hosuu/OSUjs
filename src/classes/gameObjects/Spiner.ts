@@ -1,5 +1,6 @@
 import { Drawable } from '../../interfaces'
 import { ParsedSpinner } from '../../utils/parser'
+import Vector2 from '../Vector2'
 import HitObject from './HitObject'
 
 export default class Spinner extends HitObject implements Drawable {
@@ -12,4 +13,11 @@ export default class Spinner extends HitObject implements Drawable {
 	}
 
 	draw(): void {}
+
+	public getEndTime(): number {
+		return this.endTime
+	}
+	public getPositionAt(): Vector2 {
+		throw new Error('Method not implemented.')
+	}
 }

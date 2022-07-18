@@ -1,10 +1,7 @@
+import OsuPlayer from './classes/OsuPlayer'
+
 export interface Drawable {
-	draw(
-		ctx: CanvasRenderingContext2D,
-		opacity: number,
-		circleRadius: number,
-		approachScale: number
-	): void
+	draw(ctx: CanvasRenderingContext2D, player: OsuPlayer, color: string): void
 }
 
 export interface BeatmapDifficulty {

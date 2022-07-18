@@ -1,5 +1,6 @@
 import { Drawable } from '../../interfaces'
 import { ParsedSlider } from '../../utils/parser'
+import OsuPlayer from '../OsuPlayer'
 import Vector2 from '../Vector2'
 import HitObject from './HitObject'
 
@@ -25,55 +26,88 @@ export default class Slider extends HitObject implements Drawable {
 		this.length = data.length
 	}
 
-	draw(
-		ctx: CanvasRenderingContext2D,
-		opacity: number,
-		circleRadius: number,
-		approachScale: number
-	): void {
-		if (this.curveType === 'L') this.drawLinearSlider(ctx, opacity, circleRadius, approachScale)
+	draw(ctx: CanvasRenderingContext2D, player: OsuPlayer, color: string): void {
+		if (this.curveType === 'L') this.computeLinearSliderPath(ctx)
+		else if (this.curveType === 'B') this.computeBezierSliderPath(ctx)
+		else if (this.curveType === 'P') this.computePerfectSliderPath(ctx)
+		this.drawSliderTrack(ctx, player, color)
+
+		this.drawHitCircle(ctx, player, color)
 	}
 
-	private drawLinearSlider(
-		ctx: CanvasRenderingContext2D,
-		opacity: number,
-		circleRadius: number,
-		approachScale: number
-	) {
-		//SliderTrack
+	private computeLinearSliderPath(ctx: CanvasRenderingContext2D) {
 		ctx.save()
 		ctx.beginPath()
 		ctx.moveTo(this.position.x, this.position.y)
 		for (const point of this.curvePoints) {
 			ctx.lineTo(point.x, point.y)
 		}
-		ctx.strokeStyle = `rgba(20,20,20,${opacity})`
+	}
+
+	private computeBezierSliderPath(ctx: CanvasRenderingContext2D) {
+		ctx.save()
+		ctx.beginPath()
+		ctx.moveTo(this.position.x, this.position.y)
+		for (const point of this.curvePoints) {
+			ctx.lineTo(point.x, point.y)
+		}
+	}
+
+	private computePerfectSliderPath(ctx: CanvasRenderingContext2D) {
+		// https://stackoverflow.com/q/4103405
+		const A = this.position
+		const B = this.curvePoints[0]
+		const C = this.curvePoints[1]
+		const yDeltaA = B.y - A.y
+		const xDeltaA = B.x - A.x
+		const yDeltaB = C.y - B.y
+		const xDeltaB = C.x - B.x
+
+		const aSlope = yDeltaA / xDeltaA
+		const bSlope = yDeltaB / xDeltaB
+		const centerX =
+			(aSlope * bSlope * (A.y - C.y) + bSlope * (A.x + B.x) - aSlope * (B.x + C.x)) /
+			(2 * (bSlope - aSlope))
+		const centerY = (-1 * (centerX - (A.x + B.x) / 2)) / aSlope + (A.y + B.y) / 2
+		const radius = Math.sqrt(
+			(centerX - this.position.x) * (centerX - this.position.x) +
+				(centerY - this.position.y) * (centerY - this.position.y)
+		)
+		const angleA = Math.atan2(A.y - centerY, A.x - centerX)
+		const angleC = Math.atan2(C.y - centerY, C.x - centerX)
+
+		const anticlockwise = xDeltaB * yDeltaA - xDeltaA * yDeltaB > 0
+		const startAngle = angleA
+		const endAngle = angleC
+
+		ctx.save()
+		ctx.beginPath()
+		ctx.arc(centerX, centerY, radius, startAngle, endAngle, anticlockwise)
+	}
+
+	private drawSliderTrack(ctx: CanvasRenderingContext2D, player: OsuPlayer, color: string) {
+		//Make rounded caps
 		ctx.lineCap = 'round'
-		ctx.lineWidth = circleRadius * 2
-		ctx.stroke()
-		ctx.strokeStyle = `rgba(50,50,50,${opacity})`
-		ctx.lineWidth = circleRadius * 2 * 0.9
-		ctx.stroke()
-		ctx.restore()
+		ctx.lineJoin = 'round'
 
-		//HitCircle
-		ctx.save()
-		ctx.beginPath()
-		ctx.arc(this.position.x, this.position.y, circleRadius, 0, Math.PI * 2)
-		ctx.fillStyle = `rgba(255,150,150,${opacity / 2})`
-		ctx.strokeStyle = `rgba(255,200,200,${opacity})`
-		ctx.lineWidth = circleRadius * 0.1
-		ctx.fill()
+		//Stroke
+		ctx.strokeStyle = `rgba(${color},${1})`
+		ctx.lineWidth = player.circleRadius * 2
 		ctx.stroke()
-		ctx.restore()
 
-		//Approach circle
-		ctx.save()
-		ctx.beginPath()
-		ctx.strokeStyle = `rgba(255,255,255,${opacity})`
-		ctx.lineWidth = circleRadius * 0.1
-		ctx.arc(this.position.x, this.position.y, circleRadius * approachScale, 0, Math.PI * 2)
+		//Body
+		ctx.strokeStyle = `rgba(50,50,50,${1})`
+		ctx.lineWidth = player.circleRadius * 2 * 0.9
 		ctx.stroke()
+
+		//Restore from computing
 		ctx.restore()
+	}
+
+	public getEndTime(): number {
+		throw new Error('Method not implemented.')
+	}
+	public getPositionAt(): Vector2 {
+		throw new Error('Method not implemented.')
 	}
 }

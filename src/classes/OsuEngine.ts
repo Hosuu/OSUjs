@@ -29,12 +29,9 @@ export default class OsuEngine {
 		// this.deltaTime = 0
 		// this.timeElapsed = 0
 
-		//Init modules
-		// this.player = new OsuPlayer(9.7, 3.3)
-
 		window.addEventListener('keypress', (e) => {
 			if (e.code === 'KeyP') {
-				this.player = new OsuPlayer(9.7, 3.3, 7)
+				this.player = new OsuPlayer(9.7, 3.3, 9)
 			}
 		})
 
