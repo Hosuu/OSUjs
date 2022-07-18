@@ -1,6 +1,6 @@
 import { Drawable } from '../../interfaces'
 import { ParsedSlider } from '../../utils/parser'
-import { bezierAt } from '../../utils/utils'
+import { bezierAt, clamp01 } from '../../utils/utils'
 import OsuPlayer from '../OsuPlayer'
 import Vector2 from '../Vector2'
 import HitObject from './HitObject'
@@ -126,12 +126,26 @@ export default class Slider extends HitObject implements Drawable {
 
 		//Restore from computing
 		ctx.restore()
+
+		//SliderBall
+		if (player.getTimeStamp() > this.time) {
+			const [x, y] = this.getPositionAt(player.getTimeStamp()).toArray()
+			ctx.save()
+			ctx.beginPath()
+			ctx.arc(x, y, player.circleRadius * 0.9, 0, Math.PI * 2)
+			ctx.strokeStyle = '#fff'
+			ctx.lineWidth = player.circleRadius * 0.2
+			ctx.stroke()
+			ctx.restore()
+		}
 	}
 
 	public getEndTime(): number {
-		return this.time
+		return this.time + 250
 	}
-	public getPositionAt(): Vector2 {
-		throw new Error('Method not implemented.')
+	public getPositionAt(timeStamp: number): Vector2 {
+		const t = clamp01((timeStamp - this.time) / (this.getEndTime() - this.time))
+
+		return Vector2.lerp(this.position, this.curvePoints[this.curvePoints.length - 1], t)
 	}
 }
