@@ -1,5 +1,5 @@
-import music from '../../public/audio.mp3'
 import OsuPlayer from './OsuPlayer'
+import music from '/src/audio.mp3'
 
 export default class OsuEngine {
 	//Render
@@ -40,6 +40,7 @@ export default class OsuEngine {
 			if (e.code === 'KeyP') {
 				this.player = new OsuPlayer(9.7, 3.3)
 				this.music.play()
+				this.music.currentTime = 0
 			}
 		})
 
@@ -108,8 +109,6 @@ export default class OsuEngine {
 
 		this.canvas.width = innerWidth
 		this.canvas.height = innerHeight
-
-		console.log(OSUPIXEL_TO_PIXEL)
 
 		this.ctx.translate(
 			(innerWidth - BASE_GAME_WIDTH * OSUPIXEL_TO_PIXEL) / 2,

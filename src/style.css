@@ -7,7 +7,10 @@
 }
 
 #app {
-	background: #222;
+	background: #777;
+	background-image: url('/bg.jpg');
+	background-blend-mode: multiply;
+	background-size: cover;
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
