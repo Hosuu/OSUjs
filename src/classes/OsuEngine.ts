@@ -9,12 +9,12 @@ export default class OsuEngine {
 	private isRunning: boolean
 	private lastUpdateTimeStamp: DOMHighResTimeStamp
 	private lastRequestedFrameId: number
-	private frameCount: number
-	private deltaTime: number
-	private timeElapsed: number
+	// private frameCount: number
+	// private deltaTime: number
+	// private timeElapsed: number
 
 	//OsuPlayer
-	private player: OsuPlayer
+	private player!: OsuPlayer //Remove !
 
 	//temp
 	private music = new Audio('../../public/audio.mp3')
@@ -28,9 +28,9 @@ export default class OsuEngine {
 		this.isRunning = true
 		this.lastUpdateTimeStamp = performance.now()
 		this.lastRequestedFrameId = 0
-		this.frameCount = 0
-		this.deltaTime = 0
-		this.timeElapsed = 0
+		// this.frameCount = 0
+		// this.deltaTime = 0
+		// this.timeElapsed = 0
 
 		//Init modules
 		// this.player = new OsuPlayer(9.7, 3.3)
@@ -57,8 +57,8 @@ export default class OsuEngine {
 
 	private mainLoop(timeStamp: DOMHighResTimeStamp) {
 		const dt: number = timeStamp - this.lastUpdateTimeStamp
-		this.deltaTime = dt
-		this.timeElapsed += dt
+		// this.deltaTime = dt
+		// this.timeElapsed += dt
 
 		//Update
 		this.player?.update(dt)
@@ -76,7 +76,7 @@ export default class OsuEngine {
 
 		//loop
 		this.lastUpdateTimeStamp = timeStamp
-		this.frameCount += 1
+		// this.frameCount += 1
 		this.lastRequestedFrameId = window.requestAnimationFrame(this.mainLoop.bind(this))
 	}
 
