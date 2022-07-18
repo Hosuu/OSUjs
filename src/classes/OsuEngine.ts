@@ -1,4 +1,3 @@
-import Input from './Input'
 import OsuPlayer from './OsuPlayer'
 
 export default class OsuEngine {
@@ -41,10 +40,6 @@ export default class OsuEngine {
 			}
 		})
 
-		window.addEventListener('wheel', (e) => {
-			OsuPlayer.music.volume += e.deltaY * 0.001
-		})
-
 		//Pause/resume engine of focus loss/gain
 		window.addEventListener('focus', this.resume.bind(this))
 		window.addEventListener('blur', this.pause.bind(this))
@@ -76,26 +71,6 @@ export default class OsuEngine {
 		this.ctx.restore()
 
 		this.player?.draw(this.ctx)
-
-		const OSUPIXEL_TO_PIXEL = Math.min(innerWidth / 640, innerHeight / 480)
-		const BASE_GAME_WIDTH = 512
-		const BASE_GAME_HEIGHT = 384
-
-		const mousePos = Input.getCursorPosition()
-		this.ctx.save()
-		this.ctx.beginPath()
-		this.ctx.arc(
-			mousePos.x / OSUPIXEL_TO_PIXEL - (innerWidth - BASE_GAME_WIDTH * OSUPIXEL_TO_PIXEL) / 4,
-			mousePos.y / OSUPIXEL_TO_PIXEL -
-				(innerHeight - BASE_GAME_HEIGHT * OSUPIXEL_TO_PIXEL) / 4,
-			10,
-			0,
-			Math.PI * 2
-		)
-		this.ctx.fillStyle = '#fff'
-		this.ctx.fill()
-		this.ctx.restore()
-		document.body.style.cursor = 'none'
 
 		//loop
 		this.lastUpdateTimeStamp = timeStamp

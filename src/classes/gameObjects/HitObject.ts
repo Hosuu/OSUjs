@@ -1,3 +1,4 @@
+import { APPROACH_CIRCLE_INITIAL_SCALE, CIRCLE_FADEOUT_TIME } from '../../constants'
 import { Drawable } from '../../interfaces'
 import { ParsedHitObject } from '../../utils/parser'
 import { clamp01 } from '../../utils/utils'
@@ -30,7 +31,7 @@ export default abstract class HitObject implements Drawable {
 
 	public abstract getEndTime(): number
 
-	public abstract getPositionAt(): Vector2
+	public abstract getPositionAt(timeStamp: number): Vector2
 
 	public isNewCombo(): boolean {
 		return this.newCombo
@@ -50,11 +51,10 @@ export default abstract class HitObject implements Drawable {
 
 		let opacity = 1 - clamp01((timeDiff - (preempt - fadein)) / fadein)
 		let scale = 1
-		let approachScale = 1 + (timeDiff / preempt) * 2
-
+		let approachScale = 1 + (timeDiff / preempt) * (APPROACH_CIRCLE_INITIAL_SCALE - 1)
 		if (timeDiff < 0) {
-			opacity = 1 + timeDiff / 100
-			scale = 1 - (timeDiff / 200) * 0.5
+			opacity = 1 + timeDiff / CIRCLE_FADEOUT_TIME
+			scale = 1 - (timeDiff / (CIRCLE_FADEOUT_TIME * 2)) * 0.5
 			approachScale = 0
 		}
 

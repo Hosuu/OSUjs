@@ -11,14 +11,15 @@ export default class HitCircle extends HitObject implements Drawable {
 		super(data)
 	}
 
-	draw(ctx: CanvasRenderingContext2D, player: OsuPlayer, color: string): void {
-		this.drawHitCircle(ctx, player, color)
+	public getEndTime(): number {
+		return this.time
 	}
 
-	public getEndTime(): number {
-		throw new Error('Method not implemented.')
+	public getPositionAt(_timeStamp: number): Vector2 {
+		return this.position.clone()
 	}
-	public getPositionAt(): Vector2 {
-		throw new Error('Method not implemented.')
+
+	public draw(ctx: CanvasRenderingContext2D, player: OsuPlayer, color: string): void {
+		this.drawHitCircle(ctx, player, color)
 	}
 }

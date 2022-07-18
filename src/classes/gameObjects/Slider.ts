@@ -1,5 +1,6 @@
 import { Drawable } from '../../interfaces'
 import { ParsedSlider } from '../../utils/parser'
+import { bezierAt } from '../../utils/utils'
 import OsuPlayer from '../OsuPlayer'
 import Vector2 from '../Vector2'
 import HitObject from './HitObject'
@@ -47,9 +48,32 @@ export default class Slider extends HitObject implements Drawable {
 	private computeBezierSliderPath(ctx: CanvasRenderingContext2D) {
 		ctx.save()
 		ctx.beginPath()
-		ctx.moveTo(this.position.x, this.position.y)
-		for (const point of this.curvePoints) {
-			ctx.lineTo(point.x, point.y)
+		const points = [...this.curvePoints]
+
+		if (points.length === 1) {
+			ctx.moveTo(points[0].x, points[0].y)
+		} else if (points.length === 2) {
+			ctx.moveTo(points[0].x, points[0].y)
+			ctx.lineTo(points[1].x, points[1].y)
+		} else if (points.length === 3) {
+			ctx.moveTo(points[0].x, points[0].y)
+			ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y)
+		} else if (points.length === 4) {
+			ctx.moveTo(points[0].x, points[0].y)
+			ctx.bezierCurveTo(
+				points[1].x,
+				points[1].y,
+				points[2].x,
+				points[2].y,
+				points[3].x,
+				points[3].y
+			)
+		} else {
+			const divisions = Math.min(64, Math.ceil(500 / points.length))
+			for (let j = 0; j <= divisions; j += 1) {
+				const [x1, y1] = bezierAt(j / divisions, points)
+				ctx.lineTo(x1, y1)
+			}
 		}
 	}
 
@@ -105,7 +129,7 @@ export default class Slider extends HitObject implements Drawable {
 	}
 
 	public getEndTime(): number {
-		throw new Error('Method not implemented.')
+		return this.time
 	}
 	public getPositionAt(): Vector2 {
 		throw new Error('Method not implemented.')

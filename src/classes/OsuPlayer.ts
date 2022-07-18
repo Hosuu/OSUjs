@@ -1,10 +1,12 @@
 import Beatmap2 from '../Beatmap'
+import { CIRCLE_FADEOUT_TIME } from '../constants'
 import { calcFadein, calcPrempt } from '../utils/ArCalc'
 import { parseHitObjectLine } from '../utils/parser'
 import HitCircle from './gameObjects/HitCircle'
 import HitObject from './gameObjects/HitObject'
 import Slider from './gameObjects/Slider'
 import Spinner from './gameObjects/Spiner'
+import Input, { Key } from './Input'
 import music from '/src/audio.mp3'
 
 export default class OsuPlayer {
@@ -44,7 +46,8 @@ export default class OsuPlayer {
 		//@ts-ignore
 		OsuPlayer.music.preservesPitch = false
 		OsuPlayer.music.currentTime = 0
-		OsuPlayer.music.volume = 0.2
+		OsuPlayer.music.volume = 0.6
+		OsuPlayer.music.autoplay = false
 		//@ts-ignore
 		window.player = OsuPlayer.music
 
@@ -71,9 +74,22 @@ export default class OsuPlayer {
 	public update(dt: number) {
 		this.timeStamp += dt * this.speedMultiplier
 
+		if (Input.getDown(Key.ArrowLeft) && this.speedMultiplier > 0.2) {
+			this.speedMultiplier -= 0.1
+			OsuPlayer.music.playbackRate -= 0.1
+		}
+
+		if (Input.getDown(Key.ArrowRight)) {
+			this.speedMultiplier += 0.1
+			OsuPlayer.music.playbackRate += 0.1
+		}
+
 		const hitObject = this.gameObjects[this.currentIndex]
-		const timeDiff = hitObject.getTime() - this.timeStamp
-		if (timeDiff < -200) this.currentIndex++
+		if (this.timeStamp > hitObject.getEndTime() + CIRCLE_FADEOUT_TIME) {
+			this.currentIndex++
+			this.speedMultiplier += 0.001
+			OsuPlayer.music.playbackRate += 0.001
+		}
 		if (this.currentIndex >= this.gameObjects.length) throw Error('Song end')
 	}
 
@@ -93,7 +109,6 @@ export default class OsuPlayer {
 			const timeDiff = hitObject.getTime() - this.timeStamp
 			const color = this.comboColors[this.comboMap[i] % this.comboColors.length]
 
-			if (timeDiff < -200) continue
 			if (timeDiff > this.preempt) break
 
 			hitObject.draw(ctx, this, color)
