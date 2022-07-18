@@ -82,7 +82,7 @@ export default class OsuEngine {
 		//Game Loop
 		window.cancelAnimationFrame(this.lastRequestedFrameId)
 		this.isRunning = false
-		// this.music.pause()
+		OsuPlayer.music.pause()
 	}
 
 	private resume(): void {
@@ -92,7 +92,7 @@ export default class OsuEngine {
 		this.lastUpdateTimeStamp = performance.now()
 		this.lastRequestedFrameId = window.requestAnimationFrame(this.mainLoop.bind(this))
 		this.isRunning = true
-		// this.music.play()
+		if (OsuPlayer.music.currentTime > 0) OsuPlayer.music.play()
 	}
 
 	private adjustCanvasTransform() {

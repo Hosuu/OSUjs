@@ -12,7 +12,7 @@ export default class OsuPlayer {
 	private timeStamp: number
 	private speedMultiplier: number
 
-	private static music = new Audio(music)
+	public static music = new Audio(music)
 
 	public readonly preempt: number
 	public readonly fadein: number
@@ -33,9 +33,9 @@ export default class OsuPlayer {
 		this.hit100Window = 140 - 8 * OD
 		this.hit50Window = 200 - 10 * OD
 
-		this.speedMultiplier = 1.5
+		this.speedMultiplier = 3
 		OsuPlayer.music.play()
-		OsuPlayer.music.playbackRate = 1.5
+		OsuPlayer.music.playbackRate = 3
 		//@ts-ignore
 		OsuPlayer.music.preservesPitch = false
 		OsuPlayer.music.currentTime = 0
