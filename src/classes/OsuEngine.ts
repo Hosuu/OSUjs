@@ -1,6 +1,10 @@
+import Input from './Input'
 import OsuPlayer from './OsuPlayer'
 
 export default class OsuEngine {
+	//Singleton
+	private static _instance: OsuEngine
+
 	//Render
 	private canvas: HTMLCanvasElement
 	private ctx: CanvasRenderingContext2D
@@ -9,7 +13,7 @@ export default class OsuEngine {
 	private isRunning: boolean
 	private lastUpdateTimeStamp: DOMHighResTimeStamp
 	private lastRequestedFrameId: number
-	// private frameCount: number
+	private frameCount: number
 	// private deltaTime: number
 	// private timeElapsed: number
 
@@ -17,6 +21,8 @@ export default class OsuEngine {
 	private player!: OsuPlayer //Remove !
 
 	constructor() {
+		OsuEngine._instance = this
+
 		this.canvas = document.createElement('canvas')
 		this.ctx = this.canvas.getContext('2d')!
 		document.querySelector('#app')?.append(this.canvas)
@@ -25,7 +31,7 @@ export default class OsuEngine {
 		this.isRunning = true
 		this.lastUpdateTimeStamp = performance.now()
 		this.lastRequestedFrameId = 0
-		// this.frameCount = 0
+		this.frameCount = 0
 		// this.deltaTime = 0
 		// this.timeElapsed = 0
 
@@ -33,6 +39,10 @@ export default class OsuEngine {
 			if (e.code === 'KeyP') {
 				this.player = new OsuPlayer(9.7, 3.3, 9)
 			}
+		})
+
+		window.addEventListener('wheel', (e) => {
+			OsuPlayer.music.volume += e.deltaY * 0.001
 		})
 
 		//Pause/resume engine of focus loss/gain
@@ -67,9 +77,29 @@ export default class OsuEngine {
 
 		this.player?.draw(this.ctx)
 
+		const OSUPIXEL_TO_PIXEL = Math.min(innerWidth / 640, innerHeight / 480)
+		const BASE_GAME_WIDTH = 512
+		const BASE_GAME_HEIGHT = 384
+
+		const mousePos = Input.getCursorPosition()
+		this.ctx.save()
+		this.ctx.beginPath()
+		this.ctx.arc(
+			mousePos.x / OSUPIXEL_TO_PIXEL - (innerWidth - BASE_GAME_WIDTH * OSUPIXEL_TO_PIXEL) / 4,
+			mousePos.y / OSUPIXEL_TO_PIXEL -
+				(innerHeight - BASE_GAME_HEIGHT * OSUPIXEL_TO_PIXEL) / 4,
+			10,
+			0,
+			Math.PI * 2
+		)
+		this.ctx.fillStyle = '#fff'
+		this.ctx.fill()
+		this.ctx.restore()
+		document.body.style.cursor = 'none'
+
 		//loop
 		this.lastUpdateTimeStamp = timeStamp
-		// this.frameCount += 1
+		this.frameCount += 1
 		this.lastRequestedFrameId = window.requestAnimationFrame(this.mainLoop.bind(this))
 	}
 
@@ -106,5 +136,9 @@ export default class OsuEngine {
 			(innerHeight - BASE_GAME_HEIGHT * OSUPIXEL_TO_PIXEL) / 2
 		)
 		this.ctx.scale(OSUPIXEL_TO_PIXEL, OSUPIXEL_TO_PIXEL)
+	}
+
+	public static getFrameCount(): number {
+		return this._instance.frameCount
 	}
 }
