@@ -1,5 +1,4 @@
 import OsuPlayer from './OsuPlayer'
-import music from '/src/audio.mp3'
 
 export default class OsuEngine {
 	//Render
@@ -16,9 +15,6 @@ export default class OsuEngine {
 
 	//OsuPlayer
 	private player!: OsuPlayer //Remove !
-
-	//temp
-	private music = new Audio(music)
 
 	constructor() {
 		this.canvas = document.createElement('canvas')
@@ -39,8 +35,6 @@ export default class OsuEngine {
 		window.addEventListener('keypress', (e) => {
 			if (e.code === 'KeyP') {
 				this.player = new OsuPlayer(9.7, 3.3)
-				this.music.play()
-				this.music.currentTime = 0
 			}
 		})
 
@@ -88,7 +82,7 @@ export default class OsuEngine {
 		//Game Loop
 		window.cancelAnimationFrame(this.lastRequestedFrameId)
 		this.isRunning = false
-		this.music.pause()
+		// this.music.pause()
 	}
 
 	private resume(): void {
@@ -98,7 +92,7 @@ export default class OsuEngine {
 		this.lastUpdateTimeStamp = performance.now()
 		this.lastRequestedFrameId = window.requestAnimationFrame(this.mainLoop.bind(this))
 		this.isRunning = true
-		this.music.play()
+		// this.music.play()
 	}
 
 	private adjustCanvasTransform() {

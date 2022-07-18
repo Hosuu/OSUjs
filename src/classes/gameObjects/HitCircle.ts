@@ -21,7 +21,7 @@ export default class HitCircle extends HitObject implements Drawable {
 		ctx.arc(this.position.x, this.position.y, circleRadius, 0, Math.PI * 2)
 		ctx.fillStyle = `rgba(150,150,150,${opacity / 2})`
 		ctx.strokeStyle = `rgba(200,200,200,${opacity})`
-		ctx.lineWidth = circleRadius * 0.075
+		ctx.lineWidth = circleRadius * 0.1
 		ctx.fill()
 		ctx.stroke()
 		ctx.restore()

@@ -6,21 +6,39 @@ import HitCircle from './gameObjects/HitCircle'
 import HitObject from './gameObjects/HitObject'
 import Slider from './gameObjects/Slider'
 import Spinner from './gameObjects/Spiner'
+import music from '/src/audio.mp3'
 
 export default class OsuPlayer {
 	private timeStamp: number
-	private preempt: number
-	private fadein: number = 10
-	private circleRadius: number = 10
+	private speedMultiplier: number
+
+	private static music = new Audio(music)
+
+	public readonly preempt: number
+	public readonly fadein: number
+	public readonly circleRadius: number
+	public readonly hit300Window: number
+	public readonly hit100Window: number
+	public readonly hit50Window: number
 
 	private currentIndex = 0
 	private gameObjects: HitObject[] = []
 
-	constructor(AR: number, CS: number) {
+	constructor(AR: number, CS: number, OD: number) {
 		this.timeStamp = 0
 		this.preempt = calcPrempt(AR)
 		this.fadein = calcFadein(AR)
 		this.circleRadius = 54.4 - 4.48 * CS
+		this.hit300Window = 80 - 6 * OD
+		this.hit100Window = 140 - 8 * OD
+		this.hit50Window = 200 - 10 * OD
+
+		this.speedMultiplier = 1.5
+		OsuPlayer.music.play()
+		OsuPlayer.music.playbackRate = 1.5
+		OsuPlayer.music.preservesPitch = false
+		OsuPlayer.music.currentTime = 0
+		window.player = OsuPlayer.music
 
 		this.gameObjects = Beatmap.split('\n').map((l) => {
 			const data = parseHitObjectLine(l)
@@ -37,7 +55,7 @@ export default class OsuPlayer {
 	}
 
 	public update(dt: number) {
-		this.timeStamp += dt
+		this.timeStamp += dt * this.speedMultiplier
 
 		const hitObject = this.gameObjects[this.currentIndex]
 		const timeDiff = hitObject.getTime() - this.timeStamp
@@ -46,7 +64,16 @@ export default class OsuPlayer {
 	}
 
 	public draw(ctx: CanvasRenderingContext2D) {
+		let endIndex = this.currentIndex
 		for (let i = this.currentIndex; i < this.gameObjects.length; i++) {
+			const hitObject = this.gameObjects[i] as HitObject
+			const timeDiff = hitObject.getTime() - this.timeStamp
+
+			if (timeDiff > this.preempt) break
+			endIndex = i
+		}
+
+		for (let i = endIndex; i >= this.currentIndex; i--) {
 			const hitObject = this.gameObjects[i] as HitObject
 			const timeDiff = hitObject.getTime() - this.timeStamp
 
@@ -68,5 +95,9 @@ export default class OsuPlayer {
 
 			hitObject.draw(ctx, opacity, circleRadius, approachScale)
 		}
+	}
+
+	public getTimeStamp(): number {
+		return this.timeStamp
 	}
 }
