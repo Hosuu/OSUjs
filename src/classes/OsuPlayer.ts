@@ -36,8 +36,10 @@ export default class OsuPlayer {
 		this.speedMultiplier = 1.5
 		OsuPlayer.music.play()
 		OsuPlayer.music.playbackRate = 1.5
+		//@ts-ignore
 		OsuPlayer.music.preservesPitch = false
 		OsuPlayer.music.currentTime = 0
+		//@ts-ignore
 		window.player = OsuPlayer.music
 
 		this.gameObjects = Beatmap.split('\n').map((l) => {

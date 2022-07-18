@@ -33,10 +33,10 @@ export default abstract class HitObject implements Drawable {
 		approachScale: number
 	): void
 
-	protected drawApproachCircle(
-		pos: Vector2,
-		circleRadius: number,
-		approacHScale: number,
-		opacity: number
-	) {}
+	// protected drawApproachCircle(
+	// 	pos: Vector2,
+	// 	circleRadius: number,
+	// 	approacHScale: number,
+	// 	opacity: number
+	// ) {}
 }

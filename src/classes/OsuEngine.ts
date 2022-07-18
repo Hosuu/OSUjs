@@ -34,7 +34,7 @@ export default class OsuEngine {
 
 		window.addEventListener('keypress', (e) => {
 			if (e.code === 'KeyP') {
-				this.player = new OsuPlayer(9.7, 3.3)
+				this.player = new OsuPlayer(9.7, 3.3, 7)
 			}
 		})
 
