@@ -1,3 +1,4 @@
+import music from '../../public/audio.mp3'
 import OsuPlayer from './OsuPlayer'
 
 export default class OsuEngine {
@@ -17,7 +18,7 @@ export default class OsuEngine {
 	private player!: OsuPlayer //Remove !
 
 	//temp
-	private music = new Audio('../../public/audio.mp3')
+	private music = new Audio(music)
 
 	constructor() {
 		this.canvas = document.createElement('canvas')
